@@ -65,10 +65,69 @@ export const getConversationsWithUsers = query({
           .order("desc")
           .first();
 
-        return { conversation: conv, otherUser, lastMessage };
+        // compute unread count for this user
+        const convMessages = await ctx.db
+          .query("messages")
+          .withIndex("by_conversationId", (q) => q.eq("conversationId", conv._id))
+          .collect();
+
+        const readEntry = await ctx.db
+          .query("conversationReads")
+          .withIndex("by_conversationId", (q) => q.eq("conversationId", conv._id))
+          .filter((q) => q.eq(q.field("userId"), args.clerkId))
+          .first();
+
+        const lastReadAt = readEntry ? readEntry.lastReadAt : 0;
+
+        const unreadCount = convMessages.filter((m: any) =>
+          m.timestamp && m.timestamp > lastReadAt && m.senderId !== args.clerkId && !m.isDeleted
+        ).length;
+
+        return { conversation: conv, otherUser, lastMessage, unreadCount };
       })
     );
 
     return result;
+  },
+});
+
+export const markConversationRead = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    clerkId: v.string(),
+    lastReadAt: v.number(),
+    lastReadMessageId: v.optional(v.id("messages")),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("conversationReads")
+      .withIndex("by_conversationId", (q) => q.eq("conversationId", args.conversationId))
+      .filter((q) => q.eq(q.field("userId"), args.clerkId))
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        lastReadAt: args.lastReadAt,
+        lastReadMessageId: args.lastReadMessageId ? args.lastReadMessageId : undefined,
+      });
+    } else {
+      await ctx.db.insert("conversationReads", {
+        conversationId: args.conversationId,
+        userId: args.clerkId,
+        lastReadAt: args.lastReadAt,
+        lastReadMessageId: args.lastReadMessageId ? args.lastReadMessageId : undefined,
+      });
+    }
+  },
+});
+
+export const getConversationRead = query({
+  args: { conversationId: v.id("conversations"), clerkId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("conversationReads")
+      .withIndex("by_conversationId", (q) => q.eq("conversationId", args.conversationId))
+      .filter((q) => q.eq(q.field("userId"), args.clerkId))
+      .first();
   },
 });
