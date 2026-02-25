@@ -48,8 +48,8 @@ export default function Home() {
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="text-center space-y-6">
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-slate-900">Chat App</h1>
-              <p className="text-xl text-slate-600">Connect with friends instantly</p>
+              <h1 className="text-4xl font-bold text-slate-900">Chattr</h1>
+              <p className="text-xl text-slate-600">Realtime messaging with Next.js, Convex & Clerk</p>
             </div>
             <div className="pt-4">
               <SignInButton mode="modal">
