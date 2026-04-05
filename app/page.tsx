@@ -14,6 +14,7 @@ export default function Home() {
   const createOrUpdateUser = useMutation(api.users.createOrUpdateUser);
   const [activeConversation, setActiveConversation] = useState<Id<"conversations"> | null>(null);
   const [otherUser, setOtherUser] = useState<any>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const updateLastSeen = useMutation(api.users.updateLastSeen);
 
   useEffect(() => {
@@ -138,28 +139,43 @@ export default function Home() {
         </div>
       </SignedOut>
       <SignedIn>
-        <div className={`${activeConversation ? "hidden md:flex" : "flex"} w-80 flex-shrink-0 border-r border-slate-200 bg-white`}>
-          <Sidebar onSelectConversation={handleSelectConversation} />
-        </div>
-        <main className="flex-1 flex bg-white">
-          {activeConversation && otherUser ? (
-            <ChatArea
-              conversationId={activeConversation}
-              otherUser={otherUser}
-              onBack={() => {
-                setActiveConversation(null);
-                setOtherUser(null);
-              }}
-            />
-          ) : (
-            <div className="hidden md:flex flex-1 items-center justify-center text-slate-500">
-              <div className="text-center space-y-2">
-                <p className="text-lg font-medium">Select a chat to start messaging</p>
-                <p className="text-sm">Pick a friend from the sidebar or start a new conversation</p>
+        <div className={`flex w-full h-screen ${isDarkMode ? "bg-slate-950" : "bg-white"}`}>
+          {/* Theme Toggle Button */}
+          <div className={`absolute top-3 right-4 z-10 ${isDarkMode ? "bg-slate-900 border-slate-700" : "bg-white border-gray-200"} border rounded-full p-1 transition-colors`}>
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className={`p-2 rounded-full transition-colors ${
+                isDarkMode ? "bg-slate-800 text-yellow-400 hover:bg-slate-700" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {isDarkMode ? "☀️" : "🌙"}
+            </button>
+          </div>
+
+          <div className={`${activeConversation ? "hidden md:flex" : "flex"} w-80 flex-shrink-0 ${isDarkMode ? "border-slate-700 bg-slate-900" : "border-slate-200 bg-white"} border-r transition-colors`}>
+            <Sidebar onSelectConversation={handleSelectConversation} isDarkMode={isDarkMode} />
+          </div>
+          <main className={`flex-1 flex ${isDarkMode ? "bg-slate-950" : "bg-white"} transition-colors`}>
+            {activeConversation && otherUser ? (
+              <ChatArea
+                conversationId={activeConversation}
+                otherUser={otherUser}
+                onBack={() => {
+                  setActiveConversation(null);
+                  setOtherUser(null);
+                }}
+                isDarkMode={isDarkMode}
+              />
+            ) : (
+              <div className={`hidden md:flex flex-1 items-center justify-center ${isDarkMode ? "text-slate-500" : "text-slate-500"}`}>
+                <div className="text-center space-y-2">
+                  <p className={`text-lg font-medium ${isDarkMode ? "text-slate-300" : "text-slate-900"}`}>Select a chat to start messaging</p>
+                  <p className={`text-sm ${isDarkMode ? "text-slate-400" : "text-slate-600"}`}>Pick a friend from the sidebar or start a new conversation</p>
+                </div>
               </div>
-            </div>
-          )}
-        </main>
+            )}
+          </main>
+        </div>
       </SignedIn>
     </div>
   );

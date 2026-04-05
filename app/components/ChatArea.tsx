@@ -10,9 +10,10 @@ interface Props {
   conversationId: Id<"conversations">;
   otherUser: any;
   onBack: () => void;
+  isDarkMode?: boolean;
 }
 
-export default function ChatArea({ conversationId, otherUser, onBack  }: Props) {
+export default function ChatArea({ conversationId, otherUser, onBack, isDarkMode = false  }: Props) {
   const { user } = useUser();
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -127,10 +128,16 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
   };
 
   return (
-    <div className="flex flex-col h-screen flex-1 bg-white">
+    <div className={`flex flex-col h-screen flex-1 transition-colors ${isDarkMode ? "bg-slate-950" : "bg-white"}`}>
       {/* Header */}
-      <div className="p-4 border-b border-slate-200 flex items-center gap-3 bg-white">
-        <button onClick={onBack} className="md:hidden text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors">
+      <div className={`p-4 border-b flex items-center gap-3 transition-colors ${
+        isDarkMode ? "border-slate-700 bg-slate-900" : "border-slate-200 bg-white"
+      }`}>
+        <button onClick={onBack} className={`md:hidden p-2 rounded-lg transition-colors ${
+          isDarkMode 
+            ? "text-slate-400 hover:text-slate-200 hover:bg-slate-800" 
+            : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+        }`}>
           ←
         </button>
         <div className="relative flex-shrink-0">
@@ -138,15 +145,15 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
           <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="font-semibold text-slate-900">{otherUser.name}</h2>
-          <p className="text-xs text-slate-500">Active now</p>
+          <h2 className={`font-semibold ${isDarkMode ? "text-slate-100" : "text-slate-900"}`}>{otherUser.name}</h2>
+          <p className={`text-xs ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>Active now</p>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+      <div className={`flex-1 overflow-y-auto p-4 flex flex-col gap-4 ${isDarkMode ? "bg-slate-950" : "bg-white"}`}>
         {messages?.length === 0 && (
-          <div className="flex items-center justify-center h-full text-slate-400">
+          <div className={`flex items-center justify-center h-full ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}>
             <div className="text-center">
               <p className="font-medium mb-1">No messages yet</p>
               <p className="text-sm">Say hi to start the conversation!</p>
@@ -160,10 +167,10 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
           >
             <div className="group flex flex-col max-w-xs">
               <div
-                className={`px-4 py-2.5 rounded-2xl text-sm ${
+                className={`px-4 py-2.5 rounded-2xl text-sm transition-colors ${
                   msg.senderId === user?.id
                     ? "bg-blue-600 text-white rounded-br-none"
-                    : "bg-slate-100 text-slate-900 rounded-bl-none"
+                    : isDarkMode ? "bg-slate-800 text-slate-100 rounded-bl-none" : "bg-slate-100 text-slate-900 rounded-bl-none"
                 }`}
               >
                 {msg.isDeleted ? (
@@ -173,15 +180,15 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
                 )}
               </div>
               <div className={`flex items-center gap-2 mt-1.5 px-1 ${msg.senderId === user?.id ? "justify-end" : "justify-start"}`}>
-                <span className="text-xs text-slate-400">
+                <span className={`text-xs ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}>
                   {msg.timestamp ? formatTime(msg.timestamp) : ""}
                 </span>
                 {msg.isEdited && (
-                  <span className="text-xs text-slate-400">(edited)</span>
+                  <span className={`text-xs ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}>(edited)</span>
                 )}
                 {/* show Seen under the last message when other user has read it */}
                 {messages && messages.length > 0 && msg._id === messages[messages.length - 1]._id && msg.senderId === user?.id && otherRead && otherRead.lastReadMessageId === msg._id && (
-                  <span className="text-xs text-slate-400 ml-1">Seen</span>
+                  <span className={`text-xs ml-1 ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}>Seen</span>
                 )}
                 {msg.senderId === user?.id && (
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
@@ -192,13 +199,21 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
                             setEditingId(msg._id);
                             setEditText(msg.content);
                           }}
-                          className="text-xs px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors"
+                          className={`text-xs px-2 py-1 rounded transition-colors ${
+                            isDarkMode
+                              ? "bg-slate-700 text-slate-200 hover:bg-slate-600"
+                              : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                          }`}
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(msg._id, msg.senderId)}
-                          className="text-xs px-2 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
+                          className={`text-xs px-2 py-1 rounded transition-colors ${
+                            isDarkMode
+                              ? "bg-red-900 text-red-200 hover:bg-red-800"
+                              : "bg-red-100 text-red-600 hover:bg-red-200"
+                          }`}
                         >
                           Delete
                         </button>
@@ -208,7 +223,11 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
                 )}
               </div>
               {editingId === msg._id && (
-                <div className="mt-2 bg-slate-50 rounded-lg p-2 border border-slate-200">
+                <div className={`mt-2 rounded-lg p-2 border transition-colors ${
+                  isDarkMode
+                    ? "bg-slate-800 border-slate-700"
+                    : "bg-slate-50 border-slate-200"
+                }`}>
                   <textarea
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
@@ -218,7 +237,11 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
                         handleEdit(msg._id);
                       }
                     }}
-                    className="w-full bg-white text-slate-900 text-sm rounded px-2 py-1 outline-none border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className={`w-full text-sm rounded px-2 py-1 outline-none border transition-colors ${
+                      isDarkMode
+                        ? "bg-slate-700 text-slate-100 border-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        : "bg-white text-slate-900 border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    }`}
                     rows={2}
                   />
                   <div className="flex gap-2 mt-2">
@@ -233,7 +256,11 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
                         setEditingId(null);
                         setEditText("");
                       }}
-                      className="px-3 py-1 bg-slate-300 text-slate-700 text-xs rounded hover:bg-slate-400 transition-colors"
+                      className={`px-3 py-1 text-xs rounded transition-colors ${
+                        isDarkMode
+                          ? "bg-slate-700 text-slate-200 hover:bg-slate-600"
+                          : "bg-slate-300 text-slate-700 hover:bg-slate-400"
+                      }`}
                     >
                       Cancel
                     </button>
@@ -247,7 +274,9 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-slate-200 bg-white">
+      <div className={`p-4 border-t transition-colors ${
+        isDarkMode ? "border-slate-700 bg-slate-900" : "border-slate-200 bg-white"
+      }`}>
         <div className="flex gap-2 items-end">
           <input
             type="text"
@@ -258,7 +287,11 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
             }}
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
-            className="flex-1 bg-slate-100 text-slate-900 rounded-full px-4 py-2.5 text-sm outline-none border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-500"
+            className={`flex-1 rounded-full px-4 py-2.5 text-sm outline-none border transition-colors ${
+              isDarkMode
+                ? "bg-slate-800 text-slate-100 border-slate-700 placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                : "bg-slate-100 text-slate-900 border-slate-200 placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            }`}
           />
           <button
             onClick={handleSend}
@@ -268,7 +301,7 @@ export default function ChatArea({ conversationId, otherUser, onBack  }: Props) 
           </button>
         </div>
         {typingIndicators && typingIndicators.length > 0 && (
-          <p className="text-xs text-slate-400 px-4 pt-2">{otherUser.name} is typing...</p>
+          <p className={`text-xs px-4 pt-2 ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}>{otherUser.name} is typing...</p>
         )}
       </div>
     </div>
