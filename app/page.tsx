@@ -43,20 +43,96 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-white">
       <SignedOut>
-        <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="text-center space-y-6">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-slate-900">Chattr</h1>
-              <p className="text-xl text-slate-600">Realtime messaging with Next.js, Convex & Clerk</p>
-            </div>
-            <div className="pt-4">
-              <SignInButton mode="modal">
-                <button className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
-                  Sign In
-                </button>
-              </SignInButton>
+        <div className="flex-1 flex flex-col bg-white">
+          {/* Navbar */}
+          <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h1 className="text-2xl font-bold text-blue-500">Chattr</h1>
+            <SignInButton mode="modal">
+              <button className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 transition-colors duration-200">
+                Get Started
+              </button>
+            </SignInButton>
+          </nav>
+
+          {/* Hero Section */}
+          <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
+            <div className="max-w-3xl space-y-8">
+              {/* Heading and Subheading */}
+              <div className="text-center space-y-6">
+                <h2 className="text-5xl sm:text-6xl font-bold tracking-tight text-black leading-tight">
+                  Chat in real time. No delays. No clutter.
+                </h2>
+                <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                  Chattr is a fast, minimal 1:1 messaging app with typing indicators, read receipts, and instant message delivery.
+                </p>
+              </div>
+
+              {/* CTA Button */}
+              <div className="flex justify-center pt-4">
+                <SignInButton mode="modal">
+                  <button className="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 transition-colors duration-200">
+                    Try Chattr
+                  </button>
+                </SignInButton>
+              </div>
+
+              {/* Chat Mockup */}
+              <div className="pt-8 w-full max-w-md mx-auto">
+                <div className="rounded-2xl bg-gray-900 p-6 shadow-lg border border-gray-800">
+                  {/* Chat Header */}
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-500" />
+                      <div>
+                        <p className="text-sm font-medium text-white">Elena</p>
+                        <p className="text-xs text-gray-400">Online</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Messages */}
+                  <div className="space-y-3">
+                    {/* Message 1 - Received */}
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <div className="bg-gray-800 rounded-lg p-3 w-fit">
+                          <p className="text-sm text-gray-100">Hey, ready to test the new chat flow?</p>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Delivered</p>
+                      </div>
+                    </div>
+
+                    {/* Message 2 - Sent */}
+                    <div className="flex justify-end gap-3">
+                      <div className="flex-1 text-right">
+                        <div className="bg-blue-500 rounded-lg p-3 w-fit ml-auto">
+                          <p className="text-sm text-white">Looks great. I can already feel how fast this is.</p>
+                        </div>
+                        <div className="flex items-center justify-end gap-2 mt-1">
+                          <p className="text-xs text-gray-400">Seen</p>
+                          <div className="w-2 h-2 rounded-full bg-blue-400" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Typing Indicator */}
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <div className="bg-gray-800 rounded-lg p-3 w-fit">
+                          <div className="flex gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0s" }} />
+                            <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0.2s" }} />
+                            <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0.4s" }} />
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Typing...</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
